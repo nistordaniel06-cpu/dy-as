@@ -1,0 +1,12 @@
+/*
+Theme Name: DY-AS
+Template: storefront
+Version: 0.1.0
+*/
+.dy-hero {background:linear-gradient(90deg,#171310d9,transparent),url(hero.webp) center/cover;color:white;padding:clamp(3rem,9vw,9rem) 6%;margin-bottom:3rem}
+.dy-hero h1 {color:inherit;font:normal clamp(2.8rem,7vw,6rem)/1.04 Georgia,serif;max-width:9em}
+.dy-hero p {max-width:28em;font-size:1.15em}
+.dy-hero a.button {background:white;color:#221c18;border-radius:2px}
+.dy-collections {display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:2rem}
+.dy-collections a {border:1px solid #ccc;padding:.55em 1em;color:#302923;text-decoration:none}
+.site-header .site-branding .site-title a {letter-spacing:.07em}
