@@ -1,0 +1,4 @@
+{$STORE_HOST} {
+    encode gzip
+    reverse_proxy wordpress:80
+}
