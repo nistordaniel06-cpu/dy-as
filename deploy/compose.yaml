@@ -1,0 +1,51 @@
+services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: ${DB_PASSWORD:?}
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - database:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  wordpress:
+    image: wordpress:php8.3-apache
+    restart: unless-stopped
+    environment: &wp
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:?}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - wordpress:/var/www/html
+  cli:
+    image: wordpress:cli-php8.3
+    user: "33:33"
+    environment: *wp
+    profiles: [setup]
+    volumes:
+      - wordpress:/var/www/html
+      - ../:/project:ro
+  web:
+    image: caddy:2
+    restart: unless-stopped
+    environment:
+      STORE_HOST: ${STORE_HOST:?}
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - certificates:/data
+    depends_on: [wordpress]
+volumes:
+  wordpress:
+  database:
+  certificates:
