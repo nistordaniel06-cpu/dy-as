@@ -10,7 +10,7 @@ def read_catalog(path):
 
 out = Path('public')
 out.mkdir(exist_ok=True)
-shutil.copy('dy-as/hero.webp', out / 'hero.webp')
+shutil.copytree('storefront/media', out / 'media', dirs_exist_ok=True)
 products = read_catalog('catalog.csv')
 tools = read_catalog('catalog-scule.csv')
 
@@ -34,11 +34,11 @@ for item in products:
     price_label = ('de la ' if variants else '') + f'{price:.2f}'.replace('.', ',') + ' €'
     category = categories.get(item['Categories'], item['Categories'])
     name = names.get(item['Name'], item['Name'])
-    card = make_card(category, name, price_label, item['Images'].split(',')[0].strip())
+    card = make_card(category, name, price_label, (f"media/{item['SKU']}.webp" if (out / 'media' / f"{item['SKU']}.webp").is_file() else item['Images'].split(',')[0].strip()))
     catalog.append((list(categories.values()).index(category) if category in categories.values() else 99, card))
 
 cards = ''.join(card for _, card in sorted(catalog, key=lambda pair: pair[0]))
-tools_html = ''.join(make_card('Scule și unelte', item['Name'], item['Short description']) for item in tools)
+tools_html = ''.join(make_card('Scule și unelte', item['Name'], item['Short description'], f"media/{item['SKU']}.webp" if (out / 'media' / f"{item['SKU']}.webp").is_file() else '') for item in tools)
 page = (Path('storefront') / 'index.html').read_text(encoding='utf-8')
 page = page.replace('<!-- PRODUCT_CARDS -->', cards).replace('<!-- TOOL_CARDS -->', tools_html)
 (out / 'index.html').write_text(page, encoding='utf-8')
